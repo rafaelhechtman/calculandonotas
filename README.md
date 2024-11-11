@@ -10,6 +10,7 @@
         .input-group { margin-bottom: 20px; }
         .trimestre-header { font-size: 1.2em; font-weight: bold; margin-top: 10px; }
         .result { margin-top: 20px; font-weight: bold; font-size: 1.1em; color: #2E8B57; }
+        .verification { margin-top: 20px; font-size: 1em; color: #333; }
         label { display: block; margin-top: 10px; }
         input[type="number"] { width: 100px; padding: 5px; margin-top: 5px; }
         button { margin-top: 20px; padding: 10px 20px; font-size: 1em; cursor: pointer; }
@@ -19,7 +20,8 @@
 
 <div class="container">
     <h2>Calculadora de Nota Necessária na AV3 do 3º Trimestre</h2>
-
+    <h4>Feito por Rafael Edler Hechtman</h4>
+    
     <label for="materia">Selecione a Matéria:</label>
     <select id="materia">
         <option value="matematica1">Matemática 1</option>
@@ -66,11 +68,15 @@
     </div>
 
     <button onclick="calcularNotaNecessaria()">Calcular Nota Necessária na AV3</button>
+    <button onclick="verificarCalculo()">Verificar Cálculo</button>
 
     <div id="resultado" class="result"></div>
+    <div id="verificacao" class="verification"></div>
 </div>
 
 <script>
+    let notaNecessariaAV3, mediaTerceiroComNotaAV3, mediaDesejadaAnual;
+
     function calcularMediaTrimestral(av1, av2, av3) {
         return Math.ceil((av1 + av2 + av3) / 2);
     }
@@ -90,7 +96,7 @@
 
         const av1_3 = parseFloat(document.getElementById("av1_3").value) || 0;
         const av2_3 = parseFloat(document.getElementById("av2_3").value) || 0;
-        const mediaDesejadaAnual = parseFloat(document.getElementById("media_desejada_anual").value) || 6.0;
+        mediaDesejadaAnual = parseFloat(document.getElementById("media_desejada_anual").value) || 6.0;
 
         // Peso dos trimestres e média anual necessária
         const pesoTerceiroTrimestre = 2;
@@ -104,10 +110,10 @@
 
         // Nota necessária na AV3 do 3º trimestre para alcançar essa média
         const totalParcialTerceiro = av1_3 + av2_3;
-        const notaNecessariaAV3 = (mediaNecessariaTerceiroTrimestre * 2 - totalParcialTerceiro);
+        notaNecessariaAV3 = (mediaNecessariaTerceiroTrimestre * 2 - totalParcialTerceiro);
 
         // Cálculo da média do 3º trimestre com a nota necessária na AV3
-        const mediaTerceiroComNotaAV3 = calcularMediaTrimestral(av1_3, av2_3, notaNecessariaAV3);
+        mediaTerceiroComNotaAV3 = calcularMediaTrimestral(av1_3, av2_3, notaNecessariaAV3);
 
         const resultado = document.getElementById("resultado");
 
@@ -116,8 +122,41 @@
         } else if (notaNecessariaAV3 <= 0) {
             resultado.innerHTML = `Parabéns! Com as notas atuais, você já alcançou a média anual desejada de ${mediaDesejadaAnual}.`;
         } else {
-            resultado.innerHTML = `Para atingir uma média anual de ${mediaDesejadaAnual}, você precisa de ${notaNecessariaAV3.toFixed(1)} na AV3 do 3º trimestre. Com essa nota, sua média do 3º trimestre será ${mediaTerceiroComNotaAV3}.`;
+            resultado.innerHTML += `Para atingir uma média anual de ${mediaDesejadaAnual}, você precisa de ${notaNecessariaAV3.toFixed(1)} na AV3 do 3º trimestre. Com essa nota, sua média do 3º trimestre será ${mediaTerceiroComNotaAV3}.`;
         }
+    }
+
+    function verificarCalculo() {
+        const verificacao = document.getElementById("verificacao");
+        verificacao.innerHTML = `
+            <h3>Detalhes do Cálculo:</h3>
+            <p>Média do 1º Trimestre: ${parseFloat(document.getElementById("media1").value) || calcularMediaTrimestral(
+                parseFloat(document.getElementById("av1_1").value) || 0,
+                parseFloat(document.getElementById("av2_1").value) || 0,
+                parseFloat(document.getElementById("av3_1").value) || 0
+            )}</p>
+            <p>Média do 2º Trimestre: ${parseFloat(document.getElementById("media2").value) || calcularMediaTrimestral(
+                parseFloat(document.getElementById("av1_2").value) || 0,
+                parseFloat(document.getElementById("av2_2").value) || 0,
+                parseFloat(document.getElementById("av3_2").value) || 0
+            )}</p>
+            <p>Notas na AV1 e AV2 do 3º Trimestre: ${parseFloat(document.getElementById("av1_3").value) || 0} e ${parseFloat(document.getElementById("av2_3").value) || 0}</p>
+            <p>Média Anual Desejada: ${mediaDesejadaAnual}</p>
+            <p>Nota Necessária na AV3 do 3º Trimestre para alcançar a média anual: ${notaNecessariaAV3.toFixed(1)}</p>
+            <p>Média Final do 3º Trimestre com essa nota na AV3: ${mediaTerceiroComNotaAV3}</p>
+            <hr>
+            <p><strong>Cálculo Completo:</strong></p>
+            <p>(Média do 1º Trimestre + Média do 2º Trimestre + Média do 3º Trimestre com peso 2) / 4 = Média Anual</p>
+            <p>( ${parseFloat(document.getElementById("media1").value) || calcularMediaTrimestral(
+                parseFloat(document.getElementById("av1_1").value) || 0,
+                parseFloat(document.getElementById("av2_1").value) || 0,
+                parseFloat(document.getElementById("av3_1").value) || 0
+            )} + ${parseFloat(document.getElementById("media2").value) || calcularMediaTrimestral(
+                parseFloat(document.getElementById("av1_2").value) || 0,
+                parseFloat(document.getElementById("av2_2").value) || 0,
+                parseFloat(document.getElementById("av3_2").value) || 0
+            )} + (${mediaTerceiroComNotaAV3} * 2) ) / 4 = ${mediaDesejadaAnual}</p>
+        `;
     }
 </script>
 
