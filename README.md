@@ -40,12 +40,18 @@
 
     <div class="input-group">
         <div class="trimestre-header">1º Trimestre</div>
-        <label>Média: <input type="number" id="media1" placeholder="Ex: 6.0" step="0.1" min="0" max="10"></label>
+        <label>Média (ou insira as notas abaixo): <input type="number" id="media1" placeholder="Ex: 6.0" step="0.1" min="0" max="10"></label>
+        <label>AV1 (5,0): <input type="number" id="av1_1" placeholder="0-5" step="0.1" min="0" max="5"></label>
+        <label>AV2 (5,0): <input type="number" id="av2_1" placeholder="0-5" step="0.1" min="0" max="5"></label>
+        <label>AV3 (10,0): <input type="number" id="av3_1" placeholder="0-10" step="0.1" min="0" max="10"></label>
     </div>
 
     <div class="input-group">
         <div class="trimestre-header">2º Trimestre</div>
-        <label>Média: <input type="number" id="media2" placeholder="Ex: 7.0" step="0.1" min="0" max="10"></label>
+        <label>Média (ou insira as notas abaixo): <input type="number" id="media2" placeholder="Ex: 7.0" step="0.1" min="0" max="10"></label>
+        <label>AV1 (5,0): <input type="number" id="av1_2" placeholder="0-5" step="0.1" min="0" max="5"></label>
+        <label>AV2 (5,0): <input type="number" id="av2_2" placeholder="0-5" step="0.1" min="0" max="5"></label>
+        <label>AV3 (10,0): <input type="number" id="av3_2" placeholder="0-10" step="0.1" min="0" max="10"></label>
     </div>
 
     <div class="input-group">
@@ -60,25 +66,42 @@
 </div>
 
 <script>
+    function calcularMediaTrimestral(av1, av2, av3) {
+        return Math.ceil((av1 + av2 + av3) / 2);
+    }
+
     function calcularNotaNecessaria() {
-        const media1 = parseFloat(document.getElementById("media1").value) || 0;
-        const media2 = parseFloat(document.getElementById("media2").value) || 0;
+        const media1 = parseFloat(document.getElementById("media1").value) || calcularMediaTrimestral(
+            parseFloat(document.getElementById("av1_1").value) || 0,
+            parseFloat(document.getElementById("av2_1").value) || 0,
+            parseFloat(document.getElementById("av3_1").value) || 0
+        );
+
+        const media2 = parseFloat(document.getElementById("media2").value) || calcularMediaTrimestral(
+            parseFloat(document.getElementById("av1_2").value) || 0,
+            parseFloat(document.getElementById("av2_2").value) || 0,
+            parseFloat(document.getElementById("av3_2").value) || 0
+        );
+
         const av1_3 = parseFloat(document.getElementById("av1_3").value) || 0;
         const av2_3 = parseFloat(document.getElementById("av2_3").value) || 0;
-        
-        // Peso dos trimestres e cálculo da média anual necessária para aprovação (6.0)
+
+        // Peso dos trimestres e média anual necessária
         const pesoTerceiroTrimestre = 2;
         const mediaNecessariaAnual = 6 * 4;
 
-        // Soma das médias do 1º e 2º trimestre com peso normal e do 3º com peso 2
+        // Soma das médias do 1º e 2º trimestre
         const somaMedias = media1 + media2;
 
-        // Média necessária para o terceiro trimestre considerando o peso
+        // Média necessária para o 3º trimestre
         const mediaNecessariaTerceiroTrimestre = (mediaNecessariaAnual - somaMedias) / pesoTerceiroTrimestre;
 
-        // Cálculo do total parcial do terceiro trimestre e nota necessária na AV3
+        // Nota necessária na AV3 do 3º trimestre para alcançar essa média
         const totalParcialTerceiro = av1_3 + av2_3;
         const notaNecessariaAV3 = (mediaNecessariaTerceiroTrimestre * 2 - totalParcialTerceiro);
+
+        // Cálculo da média do 3º trimestre com a nota necessária na AV3
+        const mediaTerceiroComNotaAV3 = calcularMediaTrimestral(av1_3, av2_3, notaNecessariaAV3);
 
         const resultado = document.getElementById("resultado");
 
@@ -87,7 +110,7 @@
         } else if (notaNecessariaAV3 <= 0) {
             resultado.innerHTML = `Parabéns! Com as notas atuais, você já alcançou a média anual necessária de 6,0.`;
         } else {
-            resultado.innerHTML = `Para atingir uma média anual de 6,0, você precisa de ${notaNecessariaAV3.toFixed(1)} na AV3 do 3º trimestre.`;
+            resultado.innerHTML = `Para atingir uma média anual de 6,0, você precisa de ${notaNecessariaAV3.toFixed(1)} na AV3 do 3º trimestre. Com essa nota, sua média do 3º trimestre será ${mediaTerceiroComNotaAV3}.`;
         }
     }
 </script>
