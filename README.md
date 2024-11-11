@@ -3,16 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Média por Matéria</title>
+    <title>Calculadora de Nota Necessária para Aprovação Anual</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
-        .input-group { margin-bottom: 15px; }
-        .result { margin-top: 20px; font-weight: bold; }
+        .container { max-width: 600px; margin: auto; }
+        .input-group { margin-bottom: 20px; }
+        .trimestre-header { font-size: 1.2em; font-weight: bold; margin-top: 10px; }
+        .result { margin-top: 20px; font-weight: bold; font-size: 1.1em; color: #2E8B57; }
+        label { display: block; margin-top: 10px; }
+        input[type="number"] { width: 100px; padding: 5px; margin-top: 5px; }
+        button { margin-top: 20px; padding: 10px 20px; font-size: 1em; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <h2>Calculadora de Média por Matéria</h2>
+<div class="container">
+    <h2>Calculadora de Nota Necessária na AV3 do 3º Trimestre</h2>
 
     <label for="materia">Selecione a Matéria:</label>
     <select id="materia">
@@ -32,77 +38,59 @@
         <option value="filosofia">Filosofia</option>
     </select>
 
-    <div id="trimestres-container">
-        <div class="trimestre">
-            <h3>1º Trimestre</h3>
-            <div class="input-group">
-                <label>AV1 (5,0): <input type="number" class="av1" min="0" max="5" placeholder="0-5"></label>
-                <label>AV2 (5,0): <input type="number" class="av2" min="0" max="5" placeholder="0-5"></label>
-                <label>AV3 (10,0): <input type="number" class="av3" min="0" max="10" placeholder="0-10"></label>
-            </div>
-        </div>
-
-        <div class="trimestre">
-            <h3>2º Trimestre</h3>
-            <div class="input-group">
-                <label>AV1 (5,0): <input type="number" class="av1" min="0" max="5" placeholder="0-5"></label>
-                <label>AV2 (5,0): <input type="number" class="av2" min="0" max="5" placeholder="0-5"></label>
-                <label>AV3 (10,0): <input type="number" class="av3" min="0" max="10" placeholder="0-10"></label>
-            </div>
-        </div>
-
-        <div class="trimestre">
-            <h3>3º Trimestre</h3>
-            <div class="input-group">
-                <label>AV1 (5,0): <input type="number" class="av1" min="0" max="5" placeholder="0-5"></label>
-                <label>AV2 (5,0): <input type="number" class="av2" min="0" max="5" placeholder="0-5"></label>
-                <label>AV3 (10,0): <input type="number" class="av3" min="0" max="10" placeholder="0-10"></label>
-            </div>
-        </div>
+    <div class="input-group">
+        <div class="trimestre-header">1º Trimestre</div>
+        <label>Média: <input type="number" id="media1" placeholder="Ex: 6.0" step="0.1" min="0" max="10"></label>
     </div>
 
-    <button onclick="calcularMedia()">Calcular Média Anual</button>
+    <div class="input-group">
+        <div class="trimestre-header">2º Trimestre</div>
+        <label>Média: <input type="number" id="media2" placeholder="Ex: 7.0" step="0.1" min="0" max="10"></label>
+    </div>
+
+    <div class="input-group">
+        <div class="trimestre-header">3º Trimestre (Notas Parciais)</div>
+        <label>AV1 (5,0): <input type="number" id="av1_3" placeholder="0-5" step="0.1" min="0" max="5"></label>
+        <label>AV2 (5,0): <input type="number" id="av2_3" placeholder="0-5" step="0.1" min="0" max="5"></label>
+    </div>
+
+    <button onclick="calcularNotaNecessaria()">Calcular Nota Necessária na AV3</button>
 
     <div id="resultado" class="result"></div>
+</div>
 
-    <script>
-        function calcularMedia() {
-            const trimestres = document.getElementsByClassName("trimestre");
-            const resultado = document.getElementById("resultado");
-            resultado.innerHTML = `<h3>Média por Trimestre</h3>`;
-            
-            let somaMedias = 0;
-            let medias = [];
-            let peso = [1, 1, 2]; // Peso dos trimestres
+<script>
+    function calcularNotaNecessaria() {
+        const media1 = parseFloat(document.getElementById("media1").value) || 0;
+        const media2 = parseFloat(document.getElementById("media2").value) || 0;
+        const av1_3 = parseFloat(document.getElementById("av1_3").value) || 0;
+        const av2_3 = parseFloat(document.getElementById("av2_3").value) || 0;
+        
+        // Peso dos trimestres e cálculo da média anual necessária para aprovação (6.0)
+        const pesoTerceiroTrimestre = 2;
+        const mediaNecessariaAnual = 6 * 4;
 
-            for (let i = 0; i < trimestres.length; i++) {
-                const av1 = parseFloat(trimestres[i].getElementsByClassName("av1")[0].value) || 0;
-                const av2 = parseFloat(trimestres[i].getElementsByClassName("av2")[0].value) || 0;
-                const av3 = parseFloat(trimestres[i].getElementsByClassName("av3")[0].value) || 0;
-                const totalNotas = av1 + av2 + av3;
+        // Soma das médias do 1º e 2º trimestre com peso normal e do 3º com peso 2
+        const somaMedias = media1 + media2;
 
-                // Cálculo da média trimestral: (AV1 + AV2 + AV3) / 2
-                const mediaTrimestre = Math.ceil(totalNotas / 2);
-                medias.push(mediaTrimestre);
+        // Média necessária para o terceiro trimestre considerando o peso
+        const mediaNecessariaTerceiroTrimestre = (mediaNecessariaAnual - somaMedias) / pesoTerceiroTrimestre;
 
-                resultado.innerHTML += `<p>Média do ${i + 1}º Trimestre: ${mediaTrimestre}</p>`;
+        // Cálculo do total parcial do terceiro trimestre e nota necessária na AV3
+        const totalParcialTerceiro = av1_3 + av2_3;
+        const notaNecessariaAV3 = (mediaNecessariaTerceiroTrimestre * 2 - totalParcialTerceiro);
 
-                // Soma das médias considerando os pesos
-                somaMedias += mediaTrimestre * peso[i];
-            }
+        const resultado = document.getElementById("resultado");
 
-            // Cálculo da média anual com peso dobrado no 3º trimestre
-            const mediaAnual = somaMedias / 4;
-
-            if (mediaAnual >= 6) {
-                resultado.innerHTML += `<p><strong>Sua média anual é ${mediaAnual.toFixed(2)}, e você foi aprovado.</strong></p>`;
-            } else {
-                // Nota necessária no terceiro trimestre para aprovação
-                const mediaNecessariaTerceiro = Math.max(6 * 4 - (medias[0] + medias[1] + medias[2]), 0) / 2;
-                resultado.innerHTML += `<p>Sua média anual atual é ${mediaAnual.toFixed(2)}. Para ser aprovado, você precisará de ${Math.ceil(mediaNecessariaTerceiro)} na média do 3º trimestre.</p>`;
-            }
+        if (notaNecessariaAV3 > 10) {
+            resultado.innerHTML = `Para atingir uma média anual de 6,0, você precisaria de ${notaNecessariaAV3.toFixed(1)} na AV3, o que é superior a 10. Atingir essa média pode não ser possível.`;
+        } else if (notaNecessariaAV3 <= 0) {
+            resultado.innerHTML = `Parabéns! Com as notas atuais, você já alcançou a média anual necessária de 6,0.`;
+        } else {
+            resultado.innerHTML = `Para atingir uma média anual de 6,0, você precisa de ${notaNecessariaAV3.toFixed(1)} na AV3 do 3º trimestre.`;
         }
-    </script>
+    }
+</script>
 
 </body>
 </html>
